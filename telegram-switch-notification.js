@@ -35,9 +35,7 @@ function sendTelegramMessage(msg) {
       text: msg
     })
   }, function(res, err) {
-    if (err !== 0) { 
-      log("Failed to send Telegram alert. Error: " + err); 
-    }
+    if (err !== 0) { print("Failed to send Telegram alert. Error: " + err); }
   });
 }
 
@@ -53,32 +51,36 @@ Shelly.addStatusHandler(function(status) {
       let isOn = status.delta.output;
       let state = isOn ? "✅ ON" : "❌ OFF";
       let source = status.delta.source || "unknown";
+
+      log("Switch state changed to: " + isOn ? "ON" : "OFF");
       
       // "input" — physical/local switch
       // "HTTP" or "HTTP_in" — REST API call
       // "WS" — WebSocket (app)
-      // "SHC" - Applicazione Shelly (sembra)
+      // "SHC" - Shelly App
       // "MQTT" — MQTT command
-      // "timer" — scheduled/auto
-      let msg = "🏠 Caldaia Canonica: " + state;
-      if (source === "input") {
-        msg = msg + " (da interruttore 🔘)";
-      } else if (source === "timer") {
-        msg = msg + " (azione programmata)";
+      // "timer" or "loopback" — scheduled/auto
+      let msg = "🏠 Shelly Device: " + state;
+      if (source === "input" || source === "switch") {
+        msg = msg + "\nInterruttore 🕹️";
+      } else if (source === "timer" || source === "loopback") {
+        msg = msg + "\nAzione programmata";
       } else if (source === "SHC") {
-        msg = msg + " (via App 📱)";
+        msg = msg + "\nApp 📱";
       } else if (source === "WS" || source === "WS_in") {
-        msg = msg + " (via Web 🖥️)";
+        msg = msg + "\nWeb 🖥️";
       } else if (source === "HTTP" || source === "HTTP_in") {
-        msg = msg + " (via URL 🔗)";
+        msg = msg + "\nURL 🔗";
       }
       
       msg = msg + " [" + source + "]";
       
       if (isOn) {
+        // Store turn-on timestamp
         turnOnTime = Date.now();
       } else {
         if (turnOnTime !== null) {
+          // Compute the on-time and add to message
           let elapsed = Date.now() - turnOnTime;
           let seconds = Math.floor(elapsed / 1000);
           let minutes = Math.floor(seconds / 60);
@@ -103,4 +105,4 @@ Shelly.addStatusHandler(function(status) {
 });
 
 
-log("Telegram notification running");
+print("Telegram notification running");
