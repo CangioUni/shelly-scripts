@@ -5,11 +5,11 @@
  *   output is turned on or off. Provide info on the trigger source 
  *   (Application, web, physical button) and ON-time.
  * @status production
- * @link 
+ * @developer Simone Cangini (simone@simonecangini.it)
  */
 
 
-// Configuration
+// ========== CONFIGURATION ==========
 let CONFIG = {
   DEBUG: true,
   
@@ -17,6 +17,7 @@ let CONFIG = {
   TELEGRAM_TOKEN: "12345678:abunchofrandomcharacters",
   TELEGRAM_CHAT_ID: "<user_id>"
 };
+// ===================================
 
 // Helper for memory-safe logging
 function log(msg) {
